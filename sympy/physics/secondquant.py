@@ -1850,6 +1850,12 @@ class NO(Expr):
                 return coeff*cls(Mul(*newseq))
             return Expr.__new__(cls, Mul(*newseq))
 
+        if arg.is_Pow:
+            if not arg.args[0].is_commutative:
+                return S.Zero
+            else:
+                return arg
+
         if isinstance(arg,NO):
             return arg
 
@@ -2178,6 +2184,10 @@ def _sort_anticommuting_fermions(string1, key=_sqkey):
     sign: int telling how many times the sign should be changed
           (if sign==0 the string was already sorted)
     """
+
+    for i in string1:
+        if i.is_Pow:
+            raise ViolationOfPauliPrinciple([i,i])
 
     verified = False
     sign = 0
